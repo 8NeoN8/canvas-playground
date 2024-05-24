@@ -1,0 +1,12 @@
+{
+  "level":1,
+  "enemyCount": 1,
+  "enemies": [
+    {
+      "enemyType": "testType",
+      "movementPattern": "back-forth",
+      "bulletPattern": "single-forward",
+      "bulletTargetPlayer": false
+    }
+  ]
+}
