@@ -80,24 +80,67 @@ export default{
 
       if (this.controlsState.isLeftPressed) {
         this.player.position.x -= this.player.velocity
+        this.player.boundaries.right -= this.player.velocity
+        this.player.boundaries.left -= this.player.velocity
+
+
+        if (this.checkMapCollision(this.player.boundaries.left, 0, false)) {
+          this.player.position.x = 0
+          this.player.boundaries.right = this.player.dimensions.w
+          this.player.boundaries.left = 0
+        }
       }
 
-      if (this.controlsState.isRightPressed) {
+      if (this.controlsState.isRightPressed){
         this.player.position.x += this.player.velocity
+        this.player.boundaries.right += this.player.velocity
+        this.player.boundaries.left += this.player.velocity
+
+        if (this.checkMapCollision(this.player.boundaries.right, this.cnv.width, true)) {
+          this.player.position.x = this.cnv.width - this.player.dimensions.w
+          this.player.boundaries.right = this.cnv.width
+          this.player.boundaries.left = this.cnv.width - this.player.dimensions.w
+        }
       }
 
       if(this.controlsState.isUpPressed){
         this.player.position.y -= this.player.velocity
+        this.player.boundaries.top -= this.player.velocity
+        this.player.boundaries.bottom -= this.player.velocity
+
+        if (this.checkMapCollision(this.player.boundaries.top, 0, false)) {
+          this.player.position.y = 0
+          this.player.boundaries.top = 0
+          this.player.boundaries.bottom = this.player.dimensions.h
+        }
       }
 
       if(this.controlsState.isDownPressed){
+
         this.player.position.y += this.player.velocity
+        this.player.boundaries.top += this.player.velocity
+        this.player.boundaries.bottom += this.player.velocity
+
+        if (this.checkMapCollision(this.player.boundaries.bottom, this.cnv.height, true)) {
+          this.player.position.y = this.cnv.height - this.player.dimensions.h
+          this.player.boundaries.top = this.cnv.height - this.player.dimensions.h
+          this.player.boundaries.bottom = this.cnv.height 
+        }
+      }
+    },
+    checkMapCollision(playerBoundary, collisionCoordinateTocheck, boundaryHasToBeLowerThanCollision){
+      //console.log(`If ${playerBoundary} > to ${collisionCoordinateTocheck} \n and boundaryHasToBeLowerThanCollision is ${boundaryHasToBeLowerThanCollision}`);
+
+      if(boundaryHasToBeLowerThanCollision && playerBoundary > collisionCoordinateTocheck){
+        return true
+      }
+      if(!boundaryHasToBeLowerThanCollision && playerBoundary < collisionCoordinateTocheck){
+        return true
       }
     },
     createControls(){
       window.addEventListener('keypress', (event) => {
         event.preventDefault()
-        console.log(event);
         this.controlsLogic(event, true)
         if(event.key == ' ') this.player.velocity = 2
       })
@@ -108,7 +151,6 @@ export default{
       })
 
     },
-    
     controlsLogic(keyEvent, isHolded){
       if(isHolded){
         switch (keyEvent.key.toLowerCase()) {
@@ -160,14 +202,22 @@ export default{
         },
         velocity: 5,
         dimensions: playerDimensions,
-        color:'lime'
+        color:'lime',
+        boundaries: {
+          top: this.cnv.height - playerDimensions.h - 20,
+          bottom: this.cnv.height - playerDimensions.h - 20 + playerDimensions.h,
+          left: this.cnv.width/2 - playerDimensions.w,
+          right: this.cnv.width/2 - playerDimensions.w + playerDimensions.w,
+        }
       })
+
+      console.log(this.player);
 
       for (let i = 0; i < this.gameLevel.enemyCount; i++) {
         let enemy = createEnemy({
           position: {
             x: this.cnv.width/2 - playerDimensions.w,
-            y: 0 +  playerDimensions.h + 20
+            y: 20
           },
           dimensions: playerDimensions,
           velocity: 5,
@@ -175,16 +225,21 @@ export default{
           type: this.gameLevel.enemies[i].enemyType,
           bulletPattern: this.gameLevel.enemies[i].bulletPattern,
           movementPattern: this.gameLevel.enemies[i].movementPattern,
-          isEnemy: true
+          isEnemy: true,
+          boundaries: {
+            top: 20,
+            bottom: 20 + playerDimensions.h,
+            left: this.cnv.width/2 - playerDimensions.w,
+            right: this.cnv.width/2 - playerDimensions.w + playerDimensions.w,
+          }
         })
+      console.log(enemy, 'enemy');
 
-        this.drawPlayerEnemy(enemy)
+      this.drawPlayerEnemy(enemy)
 
-        this.enemies.push(enemy)
+      this.enemies.push(enemy)
         
-      }
-
-      //console.log(this.player);
+    }
 
       this.drawPlayerEnemy(this.player, true)
       this.createControls()
@@ -208,7 +263,8 @@ export default{
     clearCanvas(){
       this.ctx.beginPath()
       this.ctx.clearRect(0,0,this.cnv.width,this.cnv.height)
-    }
+    },
+    
   },
 }
 </script>

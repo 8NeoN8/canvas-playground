@@ -5,7 +5,7 @@ const playerPrototype = {
   }
 }
 
-export default function createPlayer({position, velocity, dimensions,color}){
+export default function createPlayer({position, velocity, dimensions, color, boundaries}){
   return Object.create(playerPrototype, {
     position:{
       value: {
