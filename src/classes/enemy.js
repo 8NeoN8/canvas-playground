@@ -5,7 +5,18 @@ const enemyPrototype = {
   }
 }
 
-export default function createEnemy({position, velocity, dimensions, color, type, bulletPattern, movementPattern, isEnemy, boundaries,reachedBoundary}){
+export default function createEnemy({
+    position, 
+    velocity, 
+    dimensions, 
+    color, 
+    type, 
+    bulletPattern, 
+    movementPattern, 
+    isEnemy, 
+    boundaries,
+    reachedBoundary
+  }){
   return Object.create(enemyPrototype, {
     position:{
       value: {
